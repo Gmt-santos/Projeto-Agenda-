@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'contact',
+  
 ]
 
 MIDDLEWARE = [
@@ -49,6 +50,7 @@ ROOT_URLCONF = 'project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        #Faz ele procurar nessa pasta por templates automaticamente
         'DIRS': [
             BASE_DIR / 'base_templates'
         ],
@@ -122,7 +124,7 @@ MEDIA_ROOT=BASE_DIR/'media'
 STATIC_ROOT=BASE_DIR/"static" #collectstatic
 # Sobrescreve todas as configs pelas configs locais
 try:
-    from project.local_settings import *
+    from project.local_settings.local_settings import *
 except:
     ...
 

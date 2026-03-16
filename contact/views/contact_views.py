@@ -1,12 +1,17 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from contact import models
+from django.db.models import Q
+from django.core.paginator import Paginator
 
 # Create your views here.
 def index(request):
     #filter = where#
     contacts=models.Contact.objects.filter(show=True)
+    paginator=Paginator(contacts,25)
+    page_number=request.GET.get("page")
+    page_obj=paginator.get_page(page_number)
     context={
-        'contacts':contacts 
+        'page_obj':page_obj
     }
     #Procura na pasta templates
     return render(request,'contact/index.html',context)
@@ -20,3 +25,21 @@ def contact(request,contact_id):
     #Procura na pasta templates
     return render(request,'contact/contact.html',context)
      
+def search(request):
+    search_value=request.GET.get('q','').strip()
+    if search_value == "":
+        return redirect("contact:index")
+    print(search_value)
+    #filter = where#
+    contacts=models.Contact.objects.filter(show=True). \
+    filter(Q(first_name__icontains=search_value) | Q(last_name__icontains=search_value))
+    paginator=Paginator(contacts,25)
+    page_number=request.GET.get("page")
+    page_obj=paginator.get_page(page_number)
+    context={
+        'page_obj':page_obj
+    }
+
+    
+    #Procura na pasta templates
+    return render(request,'contact/index.html',context)

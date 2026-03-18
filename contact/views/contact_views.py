@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from contact import models
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -43,3 +43,16 @@ def search(request):
     
     #Procura na pasta templates
     return render(request,'contact/index.html',context)
+    
+def delete(request,contact_id):
+    contact=get_object_or_404(models.Contact,pk=contact_id,show=True)
+    # "no" é o valor default #
+    confirmation=request.POST.get("confirmation","no")
+
+    if confirmation == "yes":
+        contact.delete()
+        return redirect("contact:index.html")
+    return render(request,'contact/contact.html',{
+        'contact':contact,  
+        'confirmation':confirmation
+    })

@@ -3,8 +3,9 @@ from django.core.exceptions import ValidationError
 from contact import models
 from django import forms
 from contact.forms import ContactForm
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-
+@login_required(login_url='contact:login')
 def create(request):
     form_action=reverse('contact:create')
     if request.method == "POST":
@@ -15,7 +16,9 @@ def create(request):
 
         }
         if form.is_valid():
-          contact= form.save()
+          contact= form.save(commit=False)
+          contact.owner=request.user
+          contact.save()
           return redirect("contact:update",contact_id=contact.pk)
         return render(request,"contact/create.html",context)
 
@@ -27,7 +30,7 @@ def create(request):
 
     return render(request,"contact/create.html",context)
 
-
+@login_required(login_url='contact:login')
 def update(request,contact_id):
     contact=get_object_or_404(models.Contact,pk=contact_id,show=True)
     form_action=reverse('contact:update',args=(contact_id,))
